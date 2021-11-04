@@ -19,11 +19,36 @@ app.get("/", function (req, res) {
 });
 
 
+function getTimeStamp({date}) {
+  return new Promise((resolve, reject) => {
+    if((unix = Number(date)) && (utc = new Date(unix).toUTCString())) {
+      resolve({unix, utc})
+    }
+    else if((unix = Date.parse(date)) && (utc = new Date(unix).toUTCString())) {
+      resolve({unix, utc})
+    }
+    else {
+      reject({"error":"Invalid Date"})
+    }
+  })
+}
+
 // your first API endpoint... 
 app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+app.get("/api", (req,res) => {
+    let unix = Date.now();
+    let utc = new Date(unix).toUTCString();
+    res.json({unix,utc})
+})
+
+app.get("/api/:date", (req,res)=> {
+  getTimeStamp(req.params)
+  .then(data => res.json(data))
+  .catch(err => res.json(err))
+})
 
 
 // listen for requests :)
